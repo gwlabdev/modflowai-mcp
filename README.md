@@ -104,6 +104,8 @@ Server overview: available repositories, tools, and statistics. No parameters.
 
 ### Viewer
 
+New. After a MODFLOW 6 run on your machine, the assistant offers this on its own: one link, no install, and the model is in a browser.
+
 #### open_in_viewer
 Open a MODFLOW 6 model that was built and run on your machine in the MODFLOW AI web viewer: mesh, packages, heads per timestep, cell inspector, cross section, 3D. The assistant downloads a small writer (`https://mcp.modflow.ai/viewer-snapshot.pyz`, Python 3.10 or newer with numpy, flopy, flatbuffers, pydantic, scipy, matplotlib and shapely), runs it on the model directory, sends the resulting `manifest.json` to this tool, and receives one upload URL per file. It then sends each file with `curl -T` and calls `finish_viewer_link`.
 - The model must have been run (`mfsim.nam` plus a head file).
