@@ -6,11 +6,11 @@
 
 # MODFLOW-AI MCP Server
 
-A hosted Model Context Protocol (MCP) server that gives AI assistants grounded access to MODFLOW and PEST documentation, to the FloPy and PyEMU Python API, to the Fortran source of MODFLOW 6 and MODFLOW-USG-Transport (GSI), to tutorials, and to the ModelMuse Help. Your assistant searches and retrieves real sources instead of guessing.
+A hosted Model Context Protocol (MCP) server that gives AI assistants grounded access to MODFLOW and PEST documentation, to the FloPy and PyEMU Python API, to the Fortran source of MODFLOW 6 and MODFLOW-USG-Transport (GSI), to tutorials, and to the ModelMuse Help. Your assistant searches and retrieves real sources instead of guessing. It can also open a MODFLOW 6 model you built and ran on your own machine in the MODFLOW AI web viewer, with a link that needs no install.
 
 ## What It Does
 
-MODFLOW-AI MCP Server exposes nine tools over the [Model Context Protocol](https://modelcontextprotocol.io/). An AI assistant calls them to search documentation, retrieve files, and return cited answers.
+MODFLOW-AI MCP Server exposes thirteen tools over the [Model Context Protocol](https://modelcontextprotocol.io/). An AI assistant calls them to search documentation, retrieve files, return cited answers, and open a model that was run locally in the web viewer.
 
 ### Key Features
 
@@ -21,6 +21,7 @@ MODFLOW-AI MCP Server exposes nine tools over the [Model Context Protocol](https
 - **GitHub URLs** returned with every code or tutorial result.
 - **File retrieval by exact path**, with pagination for files over 30 KB.
 - **Indexed ModelMuse Help**, with ranked search, page retrieval, and internal links.
+- **Your model in the viewer**: a model built and run locally with FloPy (MODFLOW 6) becomes a `viewer.modflow.ai` link, valid for 30 days, that opens in any browser. The files go straight from your machine to storage; the MCP server never receives model bytes.
 - **Authenticated access**, limited to approved users.
 - **Usage tracking**: tool calls are traced on our own infrastructure to monitor
   reliability and improve results. Traces record the account and the search
@@ -101,6 +102,20 @@ Fetch an indexed ModelMuse Help page using an exact `href` from `search_modelmus
 #### get_modflow_ai_info
 Server overview: available repositories, tools, and statistics. No parameters.
 
+### Viewer
+
+#### open_in_viewer
+Open a MODFLOW 6 model that was built and run on your machine in the MODFLOW AI web viewer: mesh, packages, heads per timestep, cell inspector, cross section, 3D. The assistant downloads a small writer (`https://mcp.modflow.ai/viewer-snapshot.pyz`, Python 3.10 or newer with numpy, flopy, flatbuffers, pydantic, scipy, matplotlib and shapely), runs it on the model directory, sends the resulting `manifest.json` to this tool, and receives one upload URL per file. It then sends each file with `curl -T` and calls `finish_viewer_link`.
+- The model must have been run (`mfsim.nam` plus a head file).
+- Limits: 250 000 cells and 500 MB per snapshot, 10 links and 2 GB per account. A refusal names the number.
+- Links are valid for 30 days.
+
+#### finish_viewer_link
+Confirms that every file of a link has arrived and returns its URL, or names the files still missing.
+
+#### list_viewer_links / delete_viewer_link
+List your links with their expiry and quota use, or delete one to make room.
+
 ## 💡 Usage Examples
 
 ### How AI agents use these tools
@@ -139,6 +154,7 @@ Server overview: available repositories, tools, and statistics. No parameters.
 - Use `search_docs` without a `repository` to search everything at once.
 - Use specific terms or acronyms (`UZF`, `WEL package`) rather than long sentences.
 - Start with `get_modflow_ai_info` to see what's available.
+- Ask for "open this model in the viewer" after a local FloPy run to get a browser link.
 - Use `semantic_search_docs` for "how / why" conceptual questions.
 - Use `search_modelmuse_help` for ModelMuse interface and setup questions.
 - Avoid overlapping the same query across multiple tools in one turn.
