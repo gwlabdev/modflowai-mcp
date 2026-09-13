@@ -107,13 +107,13 @@ Server overview: available repositories, tools, and statistics. No parameters.
 New. After a MODFLOW 6 run on your machine, the assistant offers this on its own: one link, no install, and the model is in a browser.
 
 #### open_in_viewer
-Open a MODFLOW 6 model that was built and run on your machine in the MODFLOW AI web viewer: mesh, packages, heads per timestep, cell inspector, cross section, 3D. The assistant downloads a small writer (`https://mcp.modflow.ai/viewer-snapshot.pyz`, Python 3.10 or newer with numpy, flopy, flatbuffers, pydantic, scipy, matplotlib and shapely), runs it on the model directory, sends the resulting `manifest.json` to this tool, and receives one upload URL per file. It then sends each file with `curl -T` and calls `finish_viewer_link`.
+Open a MODFLOW 6 model that was built and run on your machine in the MODFLOW AI web viewer: mesh, packages, heads per timestep, cell inspector, cross section, 3D. The assistant installs the writer once (`python -m pip install https://mcp.modflow.ai/mfai_viewer-0.1.0-py3-none-any.whl`, the `mfai-viewer` package, Python 3.10 or newer; pip brings numpy, flopy, flatbuffers, pydantic, scipy, matplotlib and shapely), runs `mfai-viewer snapshot` on the model directory, sends the small `summary.json` it prints to this tool, and receives one `mfai-viewer upload` command that sends the files, completes the link and prints the URL. Nothing is downloaded into your project directory.
 - The model must have been run (`mfsim.nam` plus a head file).
 - Limits: 250 000 cells and 500 MB per snapshot, 10 links and 2 GB per account. A refusal names the number.
 - Links are valid for 30 days.
 
 #### finish_viewer_link
-Confirms that every file of a link has arrived and returns its URL, or names the files still missing.
+Only when the upload command says files are missing: confirms that every file of a link has arrived and returns its URL, or names the files still missing.
 
 #### list_viewer_links / delete_viewer_link
 List your links with their expiry and quota use, or delete one to make room.
