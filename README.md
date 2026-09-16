@@ -6,11 +6,11 @@
 
 # MODFLOW-AI MCP Server
 
-A hosted Model Context Protocol (MCP) server that gives AI assistants grounded access to MODFLOW and PEST documentation, to the FloPy and PyEMU Python API, to the Fortran source of MODFLOW 6 and MODFLOW-USG-Transport (GSI), to tutorials, and to the ModelMuse Help. Your assistant searches and retrieves real sources instead of guessing. It can also open a MODFLOW 6 model you built and ran on your own machine in the MODFLOW AI web viewer, with a link that needs no install.
+A hosted Model Context Protocol (MCP) server that gives AI assistants grounded access to MODFLOW and PEST documentation, to the FloPy and PyEMU Python API, to the Fortran source of MODFLOW 6 and MODFLOW-USG-Transport (GSI), to tutorials, and to the ModelMuse Help. Your assistant searches and retrieves real sources instead of guessing. It can use those sources to help create and run a MODFLOW 6 model with FloPy. The `open_in_viewer` tool then turns that completed local run into a read only browser link, valid for 30 days, so other people can inspect the model without installing anything.
 
 ## What It Does
 
-MODFLOW-AI MCP Server exposes thirteen tools over the [Model Context Protocol](https://modelcontextprotocol.io/). An AI assistant calls them to search documentation, retrieve files, return cited answers, and open a model that was run locally in the web viewer.
+MODFLOW-AI MCP Server exposes thirteen tools over the [Model Context Protocol](https://modelcontextprotocol.io/). An AI assistant calls them to search documentation, retrieve files, return cited answers, help create MODFLOW 6 models with FloPy, and turn a completed local run into a read only browser link.
 
 ### Key Features
 
@@ -21,7 +21,7 @@ MODFLOW-AI MCP Server exposes thirteen tools over the [Model Context Protocol](h
 - **GitHub URLs** returned with every code or tutorial result.
 - **File retrieval by exact path**, with pagination for files over 30 KB.
 - **Indexed ModelMuse Help**, with ranked search, page retrieval, and internal links.
-- **Your model in the viewer**: a model built and run locally with FloPy (MODFLOW 6) becomes a `viewer.modflow.ai` link, valid for 30 days, that opens in any browser. The files go straight from your machine to storage; the MCP server never receives model bytes.
+- **Create a model and open it in the viewer**: the indexed documentation, source code, and tutorials help the assistant write and run a MODFLOW 6 model locally with FloPy. The `open_in_viewer` tool then creates a read only `viewer.modflow.ai` link, valid for 30 days, that opens in any browser. The files go straight from your machine to storage; the MCP server never receives model bytes.
 - **Authenticated access**, limited to approved users.
 - **Usage tracking**: tool calls are traced on our own infrastructure to monitor
   reliability and improve results. Traces record the account and the search
@@ -146,6 +146,10 @@ List your links with their expiry and quota use, or delete one to make room.
 **User**: "What is MODFLOW AI?"
 **Agent calls**: `get_modflow_ai_info`
 → Server overview.
+
+**User**: "Create a MODFLOW 6 model with FloPy and give me a link I can send to a colleague"
+**Agent**: writes and runs the model locally, prepares the viewer files, then calls `open_in_viewer`
+→ A read only browser link, valid for 30 days, with the mesh, packages, heads, cell inspector, cross section, and 3D view.
 
 **User**: "Where do I configure the MAW package in ModelMuse?"
 **Agent calls**: `search_modelmuse_help` with `query="MAW"`, then `get_modelmuse_help_page` with the returned `href`
